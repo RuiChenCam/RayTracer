@@ -3,6 +3,7 @@
 % Created on: 03 /  May / 2016
 % Last Revision:
 % Notes:
+% Reference:https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.2040-1-201507-I!!PDF-E.pdf
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % e1 & e2 are the epsilon (E) of the first and second material (1st is air)
 % theta1 & theta2 are the incident and transmission angles in degree

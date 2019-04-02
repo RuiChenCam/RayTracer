@@ -171,8 +171,8 @@ addGroundCeiling=1;%automatically add a ground and ceiling
 simulate_over_a_line=1; %simulate over only a line instead of showing surface results
 %simulation area setups
 
-mesh_.xNodeNum = 400;   % Keep the x and y mesh size the same, increase the size for better resolution and especially if you're increasing the frequency
-mesh_.yNodeNum = 400;
+mesh_.xNodeNum = 500;   % Keep the x and y mesh size the same, increase the size for better resolution and especially if you're increasing the frequency
+mesh_.yNodeNum = 500;
 mesh_.zNodeNum = 1;
 
 % The boundary of the analysis

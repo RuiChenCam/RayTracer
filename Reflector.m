@@ -155,20 +155,20 @@ classdef Reflector
             %XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
             %Function to return the Reflection and transmission
             %coefficients of the wall
+            %This function assumes the first media to be air
             
             %theta - Incident angle in degrees
             %frequency - Operating frequency, in Hz
-
+            %Reference:https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.2040-1-201507-I!!PDF-E.pdf
             %XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 
             f = obj.frequency/1e9; % frequency in GHz
 
             c = obj.conductivity; % set to zero to cancel conductivity and metal support
-            d = 1.60;
 
 
-            erC = c.* f.^d;  % imaginary part of relative perm, function of freq
+            erC = c./0.05563./f;  % imaginary part of relative perm, function of freq
 
             eta = obj.er - 1i.*erC; 
 
