@@ -151,7 +151,7 @@ phase=[0
         ];%phase, in radians
     
 
-orientation=[0 0 0
+orientation=[90 -90 90
 
             ]; %orientation, in degrees
 %pattern=@(theta,phi) 1.5*sin(theta)^2;%standard pattern for a dipole
@@ -366,4 +366,9 @@ if simulate_over_a_line==1
     hold on;
     plot(loc,power,'r-o');
     legend('Simulation','Measured')
+    
+    %Plot effective result
+    Rx.eff_dB=10*log10(abs(Rx.LosRssi.eff+Rx.RefRssi.eff+Rx.secRefRssi.eff).^2)+30;
+    plot(Rx.xyz(idx,1),Rx.eff_dB(idx),'-o');
+    
 end

@@ -159,7 +159,8 @@ classdef Reflector
             
             %theta - Incident angle in degrees
             %frequency - Operating frequency, in Hz
-            %Reference:https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.2040-1-201507-I!!PDF-E.pdf
+            %Reference:P12 of https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.2040-1-201507-I!!PDF-E.pdf
+            
             %XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 
@@ -177,11 +178,11 @@ classdef Reflector
 
 
             %XXXXXXXXXXXXXXXXXXXXXXXactual calculations, to be verified XXXXXXXXXXXXX
-            TEReflFac = abs((cos(theta) - sqrt(eta - sin(theta).^2))./(cos(theta) + sqrt(eta - sin(theta).^2)));
-            TMReflFac = abs((eta.*cos(theta) - sqrt(eta - sin(theta).^2))./(eta.*cos(theta) + sqrt(eta - sin(theta).^2)));
+            TEReflFac = ((cos(theta) - sqrt(eta - sin(theta).^2))./(cos(theta) + sqrt(eta - sin(theta).^2)));
+            TMReflFac = ((eta.*cos(theta) - sqrt(eta - sin(theta).^2))./(eta.*cos(theta) + sqrt(eta - sin(theta).^2)));
 
-            TETransFac = abs((2.*cos(theta)) ./ (cos(theta) + sqrt(eta - sin(theta).^2)));
-            TMTransFac = abs((2.*sqrt(eta).*cos(theta)) ./ (eta.*cos(theta) + sqrt(eta - sin(theta).^2)));
+            TETransFac = ((2.*cos(theta)) ./ (cos(theta) + sqrt(eta - sin(theta).^2)));
+            TMTransFac = ((2.*sqrt(eta).*cos(theta)) ./ (eta.*cos(theta) + sqrt(eta - sin(theta).^2)));
 
 
             TEReflFac = TEReflFac.^2;
