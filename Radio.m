@@ -291,7 +291,21 @@ classdef Radio
             p.gaintot_Lin=10.^(D_tot/10);
             p.theta=theta;
             p.phi=phi;
-            %p=table(theta,phi,gainx_Lin,gainy_Lin,gainz_Lin,gaintot_Lin);
+            %% Output Ex, Ey, Ez together with their relative amplitude and phase, for adding up three polarizations
+            p.Ex=Ex;
+            p.Ey=Ey;
+            p.Ez=Ez;
+            abs_E_tot=sqrt(abs(p.Ex).*abs(p.Ex)+abs(p.Ey).*abs(p.Ey)+abs(p.Ez).*abs(p.Ez));
+            
+            
+            p.Ex_amp=abs(p.Ex)./abs_E_tot;
+            p.Ex_ang=angle(p.Ex);
+            
+            p.Ey_amp=abs(p.Ey)./abs_E_tot;
+            p.Ey_ang=angle(p.Ey);
+            
+            p.Ez_amp=abs(p.Ez)./abs_E_tot;
+            p.Ez_ang=angle(p.Ez);
 
             
         end
@@ -430,6 +444,18 @@ classdef Radio
                 g.y=obj.pattern.gainy_Lin(idx);
            
                 g.z=obj.pattern.gainz_Lin(idx);
+                %Return Ex, Ey, Ez for power summation
+                g.Ex=obj.pattern.Ex(idx);
+                g.Ey=obj.pattern.Ey(idx);
+                g.Ez=obj.pattern.Ez(idx);
+                
+                g.Ex_amp=obj.pattern.Ex_amp(idx);
+                g.Ex_ang=obj.pattern.Ex_ang(idx);
+                g.Ey_amp=obj.pattern.Ey_amp(idx);
+                g.Ey_ang=obj.pattern.Ey_ang(idx);
+                g.Ez_amp=obj.pattern.Ez_amp(idx);
+                g.Ez_ang=obj.pattern.Ez_ang(idx);
+                
             %****************************
         end
         
