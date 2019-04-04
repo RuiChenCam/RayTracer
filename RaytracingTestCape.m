@@ -135,7 +135,7 @@ frequency=866e6;
 power=[1
         ];%Power in Watt, define as a m by 1 array
 
-location=[7.7,5.65 ,1.54;
+location=[7.7,5.65 ,1.5;
            ]; %location of transmitters
 % phase=[rand(1)*2*pi
 %        rand(1)*2*pi
@@ -151,7 +151,7 @@ phase=[0
         ];%phase, in radians
     
 
-orientation=[90 -90 90
+orientation=[90 -90 0
 
             ]; %orientation, in degrees
 %pattern=@(theta,phi) 1.5*sin(theta)^2;%standard pattern for a dipole
@@ -161,7 +161,7 @@ pattern={@(theta,phi) 1
 receiver_pattern=@(theta,phi) 1.8*sin(theta)^2;%pattern for receivers
 groundLevel=0;%hight of ground and ceiling, for building walls
 ceilingLevel=2.6;
-wall_permitivity=6.5;
+wall_permitivity=4;
 losFlag=1;%Line of sight
 refFlag=1;%first reflection
 secRefFlag=1;%second reflection
@@ -213,7 +213,7 @@ for i=1:size(wallxyz1,1)
         wall=Reflector([wallxyz1(i,:);wallxyz2(i,:);wallxyz3(i,:);wallxyz4(i,:)],wall_permitivity,frequency,polarizationSwap);
         walls.push(wall);
     else %different permitivity definition for the final reflecting wall
-        wall=Reflector([wallxyz1(i,:);wallxyz2(i,:);wallxyz3(i,:);wallxyz4(i,:)],11,frequency,polarizationSwap);
+        wall=Reflector([wallxyz1(i,:);wallxyz2(i,:);wallxyz3(i,:);wallxyz4(i,:)],4,frequency,polarizationSwap);
         walls.push(wall);
     end
 end
@@ -230,7 +230,7 @@ if addGroundCeiling==1
     ground=Reflector(ground_corners,4,frequency,polarizationSwap);
     ground.isgroundceiling=1;%Set this flag to 1 so that the wavetype can be distinguished from walls
     %ground.ishighlighted=1;%highlight any wall in plotting if needed
-    ceiling=Reflector(ceiling_corners,5.5,frequency,polarizationSwap);
+    ceiling=Reflector(ceiling_corners,4,frequency,polarizationSwap);
     ceiling.istransparent=1;%set ceiling to transparent so that can see through it
     ceiling.isgroundceiling=1;
     walls.push(ground);
@@ -280,7 +280,7 @@ end
 %% Define Rx also as objects
 global receivers;
 receivers=RadioGroup();
-receiver=Radio(frequency,1,0,Rx.xyz(1,:),[0 0 0]);
+receiver=Radio(frequency,1,0,Rx.xyz(1,:),[45 0 0]);
 receivers.push(receiver);
 %Here we just initialte one receiver to store the pattern data
 %Because if we want a heatmap for a layer, there is often thousands of
@@ -358,7 +358,7 @@ if simulate_over_a_line==1
     title(['Signal Strength at Y=',num2str(y)]);
     vline(location(1),'r-','Antenna Position')
 
-    data=readtable('record1.xlsx');
+    data=readtable('record_original - second.xlsx');
     loc=data.loc;
     power=data.power;
     loc=loc+7.2+0.5+0.17;
