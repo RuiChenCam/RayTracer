@@ -15,24 +15,24 @@ classdef Reflector
         TETransFac
         TMReflFac
         TMTransFac
-        polarizationSwap
+        %polarizationSwap
         
         
     end
     
     methods
-        function obj = Reflector(corners,er,frequency,polarizationSwap)
+        function obj = Reflector(corners,er,frequency,conductivity)
             %DIELECTRIC Construct an instance of this class
             %   Detailed explanation goes here
             obj.corners=corners;
             obj.er=er;
             obj.istransparent=0;
             obj.ishighlighted=0;
-            obj.conductivity=0;
+            obj.conductivity=conductivity;
             obj.isgroundceiling=0;
             obj.frequency=frequency;
             [~,obj.unor]=obj.getnorvec();
-            obj.polarizationSwap=polarizationSwap;
+            %obj.polarizationSwap=polarizationSwap;
             %Precalculate Coefficients so that efficiency can be higher
             [obj.TEReflFac,obj.TETransFac,obj.TMReflFac,obj.TMTransFac] = obj.FresnelCoefficients();
         end
@@ -159,7 +159,7 @@ classdef Reflector
             
             %theta - Incident angle in degrees
             %frequency - Operating frequency, in Hz
-            %Reference:P12 of https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.2040-1-201507-I!!PDF-E.pdf
+            %Reference:P5 and P12 of https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.2040-1-201507-I!!PDF-E.pdf
             
             %XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
@@ -171,9 +171,9 @@ classdef Reflector
 
             erC = c./0.05563./f;  % imaginary part of relative perm, function of freq
 
-            eta = obj.er - 1i.*erC; 
+            eta = obj.er - 1j.*erC; 
 
-            theta = 0:90;%XXXXXXXXXXXX convert theta to radians
+            theta = 0:90;%XXXXXXXXXXXX theta is the incident angle to the reflector
             theta = pi*theta./180; % theta in readian for ease of use in MATLAB
 
 
@@ -219,29 +219,29 @@ classdef Reflector
 
            
         end
-        function [ReflFac,TransFac]=getFresnelCoeff(obj,theta,polarizationSwap)
-            theta=round(theta)+1;%get the correct index
-            
-            if ~obj.isgroundceiling %if just a wall
-                if polarizationSwap == 1
-                    ReflFac=obj.TEReflFac(theta);
-                    TransFac=obj.TETransFac(theta);
-                elseif polarizationSwap == 0
-                    ReflFac=obj.TMReflFac(theta);
-                    TransFac=obj.TMTransFac(theta);
-                end
-                
-            else %if ground or ceiling
-                if polarizationSwap == 1
-                    ReflFac=obj.TMReflFac(theta);
-                    TransFac=obj.TMTransFac(theta);
-                elseif polarizationSwap == 0
-                    ReflFac=obj.TEReflFac(theta);
-                    TransFac=obj.TETransFac(theta);
-                end
-                
-            end
-        end
+%         function [ReflFac,TransFac]=getFresnelCoeff(obj,theta,polarizationSwap)
+%             theta=round(theta)+1;%get the correct index
+%             
+%             if ~obj.isgroundceiling %if just a wall
+%                 if polarizationSwap == 1
+%                     ReflFac=obj.TEReflFac(theta);
+%                     TransFac=obj.TETransFac(theta);
+%                 elseif polarizationSwap == 0
+%                     ReflFac=obj.TMReflFac(theta);
+%                     TransFac=obj.TMTransFac(theta);
+%                 end
+%                 
+%             else %if ground or ceiling
+%                 if polarizationSwap == 1
+%                     ReflFac=obj.TMReflFac(theta);
+%                     TransFac=obj.TMTransFac(theta);
+%                 elseif polarizationSwap == 0
+%                     ReflFac=obj.TEReflFac(theta);
+%                     TransFac=obj.TETransFac(theta);
+%                 end
+%                 
+%             end
+%         end
     end
 end
 

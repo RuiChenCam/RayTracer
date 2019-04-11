@@ -306,6 +306,7 @@ classdef Radio
             
             p.Ez_amp=abs(p.Ez)./abs_E_tot;
             p.Ez_ang=angle(p.Ez);
+            p.E_tot=abs_E_tot;
 
             
         end
@@ -406,7 +407,10 @@ classdef Radio
             %transformation to make sure theta in range(-pi,pi), phi in
             %(0-pi) as defined by Royce Suite
             %WARNING: When doing simulation, also ensure that feko has
-            %theta as (-pi,pi), phi as in (0,pi)
+            %theta as (-pi,pi), phi as in (0,pi). This won't be done
+            %automatically by pressing the "3D pattern" button in FEKO when
+            %doing simulation, thus you need to manually modify the
+            %simulation parameters!
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %Why should we do this? Because here the theta and phi are
             %obtained in MATLAB using acos and atan2, giving a range of
@@ -455,6 +459,7 @@ classdef Radio
                 g.Ey_ang=obj.pattern.Ey_ang(idx);
                 g.Ez_amp=obj.pattern.Ez_amp(idx);
                 g.Ez_ang=obj.pattern.Ez_ang(idx);
+                g.E_tot=obj.pattern.E_tot(idx);
                 
             %****************************
         end

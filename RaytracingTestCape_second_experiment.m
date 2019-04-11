@@ -107,7 +107,7 @@
 %       patterns while it is still under developing for FEKO(see the end of the gain method for Radio class to see why)
 %
 % 
-% ****************************************Legacy*******************************************
+% ****************************************Legacy Terms*******************************************
 % 4- When polarizationSwap == 1 (Antenna has vertical polarization)
 % therefore:
 %    (S polarization, Vertical polarization, Transverse Electric polarization, Perpendicular polarization) coefficients are used for walls
@@ -135,7 +135,7 @@ frequency=866e6;
 power=[1
         ];%Power in Watt, define as a m by 1 array
 
-location=[7.7,5.65 ,1.5;
+location=[7.7,5.7 ,1.55;
            ]; %location of transmitters
 % phase=[rand(1)*2*pi
 %        rand(1)*2*pi
@@ -161,11 +161,12 @@ pattern={@(theta,phi) 1
 receiver_pattern=@(theta,phi) 1.8*sin(theta)^2;%pattern for receivers
 groundLevel=0;%hight of ground and ceiling, for building walls
 ceilingLevel=2.6;
-wall_permitivity=6.5;
+wall_permitivity=10;
+wall_conductivity=0.0105;
 losFlag=1;%Line of sight
 refFlag=1;%first reflection
 secRefFlag=1;%second reflection
-polarizationSwap=1;%Swap polarization of walls and ground, ceilings
+%polarizationSwap=1;%Swap polarization of walls and ground, ceilings
 addGroundCeiling=1;%automatically add a ground and ceiling
 
 simulate_over_a_line=1; %simulate over only a line instead of showing surface results
@@ -210,10 +211,10 @@ walls=ReflectorGroup();
 
 for i=1:size(wallxyz1,1)
     if i~=size(wallxyz1,1)
-        wall=Reflector([wallxyz1(i,:);wallxyz2(i,:);wallxyz3(i,:);wallxyz4(i,:)],wall_permitivity,frequency,polarizationSwap);
+        wall=Reflector([wallxyz1(i,:);wallxyz2(i,:);wallxyz3(i,:);wallxyz4(i,:)],wall_permitivity,frequency,wall_conductivity);
         walls.push(wall);
     else %different permitivity definition for the final reflecting wall
-        wall=Reflector([wallxyz1(i,:);wallxyz2(i,:);wallxyz3(i,:);wallxyz4(i,:)],11,frequency,polarizationSwap);
+        wall=Reflector([wallxyz1(i,:);wallxyz2(i,:);wallxyz3(i,:);wallxyz4(i,:)],11,frequency,wall_conductivity);
         walls.push(wall);
     end
 end
@@ -227,10 +228,10 @@ if addGroundCeiling==1
 
     ground_corners=[wall_min(1),wall_min(2),wall_min(3);wall_min(1),wall_max(2),wall_min(3);wall_max(1),wall_max(2),wall_min(3);wall_max(1),wall_min(2),wall_min(3)];
     ceiling_corners=[wall_min(1),wall_min(2),wall_max(3);wall_min(1),wall_max(2),wall_max(3);wall_max(1),wall_max(2),wall_max(3);wall_max(1),wall_min(2),wall_max(3)];
-    ground=Reflector(ground_corners,4,frequency,polarizationSwap);
+    ground=Reflector(ground_corners,10,frequency,wall_conductivity);
     ground.isgroundceiling=1;%Set this flag to 1 so that the wavetype can be distinguished from walls
     %ground.ishighlighted=1;%highlight any wall in plotting if needed
-    ceiling=Reflector(ceiling_corners,5.5,frequency,polarizationSwap);
+    ceiling=Reflector(ceiling_corners,10,frequency,wall_conductivity);
     ceiling.istransparent=1;%set ceiling to transparent so that can see through it
     ceiling.isgroundceiling=1;
     walls.push(ground);
@@ -273,7 +274,7 @@ Rx.xyz = [reshape(X,[],1,1),reshape(Y,[],1,1),reshape(Z,[],1,1)];
 if simulate_over_a_line==1
     Rx.xyz=linspace(boundary(1,1),boundary(1,2),mesh_.xNodeNum);
     Rx.xyz=Rx.xyz';
-    RxY=5.63;
+    RxY=5.6;
     Rx.xyz(:,2)=RxY;
     Rx.xyz(:,3)=zplaneHeight;
 end
@@ -295,7 +296,7 @@ receivers.push(receiver);
 
 
 %% Call Engine Function
-[Rx.LosRssi,Rx.RefRssi,Rx.secRefRssi]=RayEngine(losFlag,refFlag,secRefFlag,polarizationSwap,Rx.xyz);
+[Rx.LosRssi,Rx.RefRssi,Rx.secRefRssi]=RayEngine(losFlag,refFlag,secRefFlag,Rx.xyz);
 
 %% Plot results
 
@@ -361,11 +362,11 @@ if simulate_over_a_line==1
     data=readtable('record_original - second.xlsx');
     loc=data.loc;
     power=data.power;
-    loc=loc+7.2+0.5+0.17;
+    loc=loc+7.2+0.5+0.17+0.09;
     power=40-power-19.4;
     hold on;
     plot(loc,power,'r-o');
-    legend('Simulation','Measured')
+    %legend('Simulation','Measured')
     
     %Plot effective result
     Rx.eff_dB=10*log10(abs(Rx.LosRssi.eff+Rx.RefRssi.eff+Rx.secRefRssi.eff).^2)+30;

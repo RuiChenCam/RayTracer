@@ -161,9 +161,9 @@ groundLevel=0;%hight of ground and ceiling, for building walls
 ceilingLevel=4;
 wall_permitivity=6;
 losFlag=1;%Line of sight
-refFlag=1;%first reflection
-secRefFlag=1;%second reflection
-polarizationSwap=1;%Swap polarization of walls and ground, ceilings
+refFlag=0;%first reflection
+secRefFlag=0;%second reflection
+wall_conductivity=0;%Swap polarization of walls and ground, ceilings
 addGroundCeiling=0;%automatically add a ground and ceiling
 
 %simulation area setups
@@ -206,7 +206,7 @@ walls=ReflectorGroup();
 [wallxyz1, wallxyz2, wallxyz3, wallxyz4,~,~,~] = CSV23D_V1 (groundLevel,ceilingLevel);%read wall configuration from CSV
 
 for i=1:size(wallxyz1,1)
-    wall=Reflector([wallxyz1(i,:);wallxyz2(i,:);wallxyz3(i,:);wallxyz4(i,:)],wall_permitivity,frequency,polarizationSwap);
+    wall=Reflector([wallxyz1(i,:);wallxyz2(i,:);wallxyz3(i,:);wallxyz4(i,:)],wall_permitivity,frequency,wall_conductivity);
     walls.push(wall);
 end
 
@@ -220,10 +220,10 @@ if addGroundCeiling==1
 
     ground_corners=[wall_min(1),wall_min(2),wall_min(3);wall_min(1),wall_max(2),wall_min(3);wall_max(1),wall_max(2),wall_min(3);wall_max(1),wall_min(2),wall_min(3)];
     ceiling_corners=[wall_min(1),wall_min(2),wall_max(3);wall_min(1),wall_max(2),wall_max(3);wall_max(1),wall_max(2),wall_max(3);wall_max(1),wall_min(2),wall_max(3)];
-    ground=Reflector(ground_corners,wall_permitivity,frequency,polarizationSwap);
+    ground=Reflector(ground_corners,wall_permitivity,frequency,wall_conductivity);
     ground.isgroundceiling=1;%Set this flag to 1 so that the wavetype can be distinguished from walls
     %ground.ishighlighted=1;%highlight any wall in plotting if needed
-    ceiling=Reflector(ceiling_corners,wall_permitivity,frequency,polarizationSwap);
+    ceiling=Reflector(ceiling_corners,wall_permitivity,frequency,wall_conductivity);
     ceiling.istransparent=1;%set ceiling to transparent so that can see through it
     ceiling.isgroundceiling=1;
     walls.push(ground);
@@ -280,7 +280,7 @@ receivers.push(receiver);
 
 
 %% Call Engine Function
-[Rx.LosRssi,Rx.RefRssi,Rx.secRefRssi]=RayEngine(losFlag,refFlag,secRefFlag,polarizationSwap,Rx.xyz);
+[Rx.LosRssi,Rx.RefRssi,Rx.secRefRssi]=RayEngine(losFlag,refFlag,secRefFlag,Rx.xyz);
 
 %% Plot results
 
