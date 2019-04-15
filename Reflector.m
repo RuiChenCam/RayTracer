@@ -184,12 +184,32 @@ classdef Reflector
             TETransFac = ((2.*cos(theta)) ./ (cos(theta) + sqrt(eta - sin(theta).^2)));
             TMTransFac = ((2.*sqrt(eta).*cos(theta)) ./ (eta.*cos(theta) + sqrt(eta - sin(theta).^2)));
 
-
-            TEReflFac = TEReflFac.^2;
-            TMReflFac = TMReflFac.^2;
-
-            TETransFac = TETransFac.^2 .* sqrt(eta);
-            TMTransFac = TMTransFac.^2 .* sqrt(eta);
+            %% Hot fix of the coefficients considering wall thickness
+            %see p16 of reference
+            d=1000;%wall thickness, should be implemented as input
+            
+            TEReflFac_temp=TEReflFac;
+            TMReflFac_temp=TMReflFac;
+            lambda=3e8/obj.frequency;
+            q=2*pi*d/lambda*sqrt(eta-sin(theta).^2);
+            TEReflFac=TEReflFac_temp.*(1-exp(-1j*2*q))./(1-TEReflFac_temp.^2.*exp(-1j*2*q));
+            TMReflFac=TMReflFac_temp.*(1-exp(-1j*2*q))./(1-TMReflFac_temp.^2.*exp(-1j*2*q));
+            TETransFac=((1-TEReflFac_temp.^2).*exp(-1j*q))./(1-TEReflFac_temp.^2.*exp(-1j*2*q));
+            TMTransFac=((1-TMReflFac_temp.^2).*exp(-1j*q))./(1-TMReflFac_temp.^2.*exp(-1j*2*q));
+            
+%change to amplitude ratio            
+%             %% Convert to power ratios
+%             
+% 
+%             TEReflFac = TEReflFac.^2;
+%             TMReflFac = TMReflFac.^2;
+% 
+%             TETransFac = TETransFac.^2 .* sqrt(eta);
+%             TMTransFac = TMTransFac.^2 .* sqrt(eta);
+            
+            %% If assume PEC
+            TEReflFac(:) = -1;
+            TMReflFac(:) = -1;
             
 %             if ~obj.isgroundceiling %if just a wall
 %                 if obj.polarizationSwap == 1

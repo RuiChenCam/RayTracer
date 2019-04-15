@@ -48,11 +48,11 @@ classdef Radio
             %   frequency - frequency of this radio, in Hz
             %   power     - power of that radio, in Watt
             %   phase     - initial phase, in radian
-            %   location  - location, in [x,y]
+            %   location  - location, in [x,y,z]
             %   orientation - in [x, y, z] where x,y,z are rotation angles
-            %                 in degrees for x,y,z axes. Anti-clockwise is
+            %                 in degrees for x,y,z axes. Clockwise is
             %                 the positive direction
-            %   pattern   - the pattern of the antenna, eg: @(theta,phi) 1.5*sin(theta)^2)
+            %   pattern   - the pattern of the antenna
             obj.frequency = frequency;
             obj.power=power;
             obj.phase=phase;
@@ -307,7 +307,11 @@ classdef Radio
             p.Ez_amp=abs(p.Ez)./abs_E_tot;
             p.Ez_ang=angle(p.Ez);
             p.E_tot=abs_E_tot;
-
+            
+            %solve NaN problem
+            p.Ex_amp(isnan(p.Ex_amp)==1)=0;
+            p.Ey_amp(isnan(p.Ey_amp)==1)=0;
+            p.Ez_amp(isnan(p.Ez_amp)==1)=0;
             
         end
         
