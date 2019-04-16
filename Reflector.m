@@ -209,7 +209,7 @@ classdef Reflector
             
             %% If assume PEC
             TEReflFac(:) = -1;
-            TMReflFac(:) = -1;
+            TMReflFac(:) = 1;
             
 %             if ~obj.isgroundceiling %if just a wall
 %                 if obj.polarizationSwap == 1
