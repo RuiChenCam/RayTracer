@@ -251,6 +251,19 @@ classdef Radio
             Y=rotated(2,:);
             Z=rotated(3,:);
             
+%             %% convert to global axis
+%             %generate current local axis coordinates:
+%             cur_ax=azelaxes(0,0);
+%             cur_ax=rotx(-obj.orientation(1))*roty(-obj.orientation(2))*rotz(-obj.orientation(3))*cur_ax;
+%             gCoord = local2globalcoord([X;Y;Z],'rr',[0;0;0],cur_ax);
+%             X=gCoord(1,:);
+%             Y=gCoord(2,:);
+%             Z=gCoord(3,:);
+            
+            
+            
+            %% generate theta phi
+            
             
             theta=acos(Z./1);
             phi=atan2(Y,X);%here we have to use atan2, or there will be a pi ambiguity
@@ -266,6 +279,14 @@ classdef Radio
             Ex=t(1,:)';
             Ey=t(2,:)';
             Ez=t(3,:)';
+            
+%             %% convert to global axis
+%             %generate current local axis coordinates:
+%             t1 = local2globalcoord([Ex';Ey';Ez'],'rr',[0;0;0],cur_ax);
+%             Ex=t1(1,:)';
+%             Ey=t1(2,:)';
+%             Ez=t1(3,:)';
+            
             %XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
             
             

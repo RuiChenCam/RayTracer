@@ -186,7 +186,7 @@ classdef Reflector
 
             %% Hot fix of the coefficients considering wall thickness
             %see p16 of reference
-            d=1000;%wall thickness, should be implemented as input
+            d=0.4;%wall thickness, should be implemented as input
             
             TEReflFac_temp=TEReflFac;
             TMReflFac_temp=TMReflFac;
