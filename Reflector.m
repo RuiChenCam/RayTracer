@@ -186,7 +186,7 @@ classdef Reflector
 
             %% Hot fix of the coefficients considering wall thickness
             %see p16 of reference
-            d=0.2;%wall thickness, should be implemented as input
+            d=0.13;%wall thickness, should be implemented as input
             
             TEReflFac_temp=TEReflFac;
             TMReflFac_temp=TMReflFac;
@@ -207,9 +207,9 @@ classdef Reflector
 %             TETransFac = TETransFac.^2 .* sqrt(eta);
 %             TMTransFac = TMTransFac.^2 .* sqrt(eta);
             
-            %% If assume PEC
-            TEReflFac(:) = -1;
-            TMReflFac(:) = 1;
+%             %% If assume PEC
+%             TEReflFac(:) = -1;
+%             TMReflFac(:) = 1;
             
 %             if ~obj.isgroundceiling %if just a wall
 %                 if obj.polarizationSwap == 1

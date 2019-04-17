@@ -168,6 +168,8 @@ refFlag=1;%first reflection
 secRefFlag=1;%second reflection
 %polarizationSwap=1;%Swap polarization of walls and ground, ceilings
 addGroundCeiling=1;%automatically add a ground and ceiling
+global gain_phase
+gain_phase=1;
 
 simulate_over_a_line=1; %simulate over only a line instead of showing surface results
 %simulation area setups
