@@ -6,6 +6,7 @@ classdef Reflector
         conductivity
         er %epsilon_r
         corners % four corners of this wall, in the form of [x1,y1,z1;x2,y2,z2;x3,y3,z3;x4,y4,z4]
+        thickness
         istransparent
         ishighlighted
         isgroundceiling%determine if it is ground or ceiling, for use in calculating Fresnel coeffs
@@ -21,11 +22,12 @@ classdef Reflector
     end
     
     methods
-        function obj = Reflector(corners,er,frequency,conductivity)
+        function obj = Reflector(corners,er,frequency,conductivity,thickness)
             %DIELECTRIC Construct an instance of this class
             %   Detailed explanation goes here
             obj.corners=corners;
             obj.er=er;
+            obj.thickness=thickness;
             obj.istransparent=0;
             obj.ishighlighted=0;
             obj.conductivity=conductivity;
@@ -179,23 +181,27 @@ classdef Reflector
 
             %XXXXXXXXXXXXXXXXXXXXXXXactual calculations, to be verified XXXXXXXXXXXXX
             TEReflFac = ((cos(theta) - sqrt(eta - sin(theta).^2))./(cos(theta) + sqrt(eta - sin(theta).^2)));
-            TMReflFac = ((eta.*cos(theta) - sqrt(eta - sin(theta).^2))./(eta.*cos(theta) + sqrt(eta - sin(theta).^2)));
+            TMReflFac = -1*((eta.*cos(theta) - sqrt(eta - sin(theta).^2))./(eta.*cos(theta) + sqrt(eta - sin(theta).^2)));
 
             TETransFac = ((2.*cos(theta)) ./ (cos(theta) + sqrt(eta - sin(theta).^2)));
             TMTransFac = ((2.*sqrt(eta).*cos(theta)) ./ (eta.*cos(theta) + sqrt(eta - sin(theta).^2)));
 
             %% Hot fix of the coefficients considering wall thickness
             %see p16 of reference
-            d=0.13;%wall thickness, should be implemented as input
-            
-            TEReflFac_temp=TEReflFac;
-            TMReflFac_temp=TMReflFac;
-            lambda=3e8/obj.frequency;
-            q=2*pi*d/lambda*sqrt(eta-sin(theta).^2);
-            TEReflFac=TEReflFac_temp.*(1-exp(-1j*2*q))./(1-TEReflFac_temp.^2.*exp(-1j*2*q));
-            TMReflFac=TMReflFac_temp.*(1-exp(-1j*2*q))./(1-TMReflFac_temp.^2.*exp(-1j*2*q));
-            TETransFac=((1-TEReflFac_temp.^2).*exp(-1j*q))./(1-TEReflFac_temp.^2.*exp(-1j*2*q));
-            TMTransFac=((1-TMReflFac_temp.^2).*exp(-1j*q))./(1-TMReflFac_temp.^2.*exp(-1j*2*q));
+            if isinf(obj.thickness)
+                return
+            else
+                d=obj.thickness;%wall thickness, should be implemented as input
+
+                TEReflFac_temp=TEReflFac;
+                TMReflFac_temp=TMReflFac;
+                lambda=3e8/obj.frequency;
+                q=2*pi*d/lambda*sqrt(eta-sin(theta).^2);
+                TEReflFac=TEReflFac_temp.*(1-exp(-1j*2*q))./(1-TEReflFac_temp.^2.*exp(-1j*2*q));
+                TMReflFac=TMReflFac_temp.*(1-exp(-1j*2*q))./(1-TMReflFac_temp.^2.*exp(-1j*2*q));
+                TETransFac=((1-TEReflFac_temp.^2).*exp(-1j*q))./(1-TEReflFac_temp.^2.*exp(-1j*2*q));
+                TMTransFac=((1-TMReflFac_temp.^2).*exp(-1j*q))./(1-TMReflFac_temp.^2.*exp(-1j*2*q));
+            end
             
 %change to amplitude ratio            
 %             %% Convert to power ratios
@@ -207,9 +213,9 @@ classdef Reflector
 %             TETransFac = TETransFac.^2 .* sqrt(eta);
 %             TMTransFac = TMTransFac.^2 .* sqrt(eta);
             
-            %% If assume PEC
-            TEReflFac(:) = -1;
-            TMReflFac(:) = 1;
+%             % If assume PEC
+%             TEReflFac(:) = -1;
+%             TMReflFac(:) = 1;
             
 %             if ~obj.isgroundceiling %if just a wall
 %                 if obj.polarizationSwap == 1

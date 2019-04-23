@@ -189,6 +189,8 @@ classdef Radio
             U_tot=r^2*W_total;%radiation intensity - total
             D_tot=4*pi*U_tot/abs(P_rad);
             D_tot=10*log10(D_tot);% total directivity
+            
+            D_tot(isinf(D_tot)==1)=-300;
 
 
             %% compensate for offsets
@@ -426,6 +428,10 @@ classdef Radio
             phi=atan2(Y,X);%here we have to use atan2, or there will be a pi ambiguity
             phi(isnan(phi)==1)=0;%solve problems when atan(0/0)
             
+            %% fix the problem when theta=0 but phi~=0
+            if theta==0
+                phi=0;
+            end
 
             
             %% XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX

@@ -151,10 +151,10 @@ phase=[0
         ];%phase, in radians
     
 
-orientation=[0 -90 0
+orientation=[90 -0 -90
 
             ]; %orientation, in degrees
-Rx_orientation=[0 90 0];
+Rx_orientation=[90 -0 -90];
 %pattern=@(theta,phi) 1.5*sin(theta)^2;%standard pattern for a dipole
 patternFromFile=1;% Enable this flag when you want to use the measured antenna pattern for simulation
 pattern={@(theta,phi) 1
@@ -163,10 +163,11 @@ receiver_pattern=@(theta,phi) 1.8*sin(theta)^2;%pattern for receivers
 groundLevel=0;%hight of ground and ceiling, for building walls
 ceilingLevel=1;
 wall_permitivity=4;
-wall_conductivity=0;
+wall_conductivity=10^7;
+wall_thickness=Inf;
 losFlag=1;%Line of sight
-refFlag=0;%first reflection
-secRefFlag=0;%second reflection
+refFlag=1;%first reflection
+secRefFlag=1;%second reflection
 %polarizationSwap=1;%Swap polarization of walls and ground, ceilings
 addGroundCeiling=0;%automatically add a ground and ceiling
 manual_define_ground=1; %define ground by hand
@@ -217,15 +218,19 @@ if manual_define_ground==0
 
     for i=1:size(wallxyz1,1)
 
-            wall=Reflector([wallxyz1(i,:);wallxyz2(i,:);wallxyz3(i,:);wallxyz4(i,:)],wall_permitivity,frequency,wall_conductivity);
+            wall=Reflector([wallxyz1(i,:);wallxyz2(i,:);wallxyz3(i,:);wallxyz4(i,:)],wall_permitivity,frequency,wall_conductivity,wall_thickness);
             walls.push(wall);
 
     end
 else
 %% If we just define a ground by hand
-        wall=Reflector([-10 -10 0;10 -10 0;10 10 0;-10 10 0],wall_permitivity,frequency,wall_conductivity);
+        wall=Reflector([-10 -10 0;10 -10 0;10 10 0;-10 10 0],wall_permitivity,frequency,wall_conductivity,Inf);
         wall.isgroundceiling=1;
         walls.push(wall);
+        
+%         wall=Reflector([-10 -10 1;10 -10 1;10 10 1;-10 10 1],wall_permitivity,frequency,wall_conductivity,wall_thickness);
+%         wall.isgroundceiling=1;
+%         walls.push(wall);
         
         
 end
@@ -239,10 +244,10 @@ if addGroundCeiling==1
 
     ground_corners=[wall_min(1),wall_min(2),wall_min(3);wall_min(1),wall_max(2),wall_min(3);wall_max(1),wall_max(2),wall_min(3);wall_max(1),wall_min(2),wall_min(3)];
     ceiling_corners=[wall_min(1),wall_min(2),wall_max(3);wall_min(1),wall_max(2),wall_max(3);wall_max(1),wall_max(2),wall_max(3);wall_max(1),wall_min(2),wall_max(3)];
-    ground=Reflector(ground_corners,wall_permitivity,frequency,wall_conductivity);
+    ground=Reflector(ground_corners,wall_permitivity,frequency,wall_conductivity,wall_thickness);
     ground.isgroundceiling=1;%Set this flag to 1 so that the wavetype can be distinguished from walls
     %ground.ishighlighted=1;%highlight any wall in plotting if needed
-    ceiling=Reflector(ceiling_corners,wall_permitivity,frequency,wall_conductivity);
+    ceiling=Reflector(ceiling_corners,wall_permitivity,frequency,wall_conductivity,wall_thickness);
     ceiling.istransparent=1;%set ceiling to transparent so that can see through it
     ceiling.isgroundceiling=1;
     walls.push(ground);
@@ -385,7 +390,7 @@ if simulate_over_a_line==1
      plot(Rx.xyz(idx,1),Rx.eff_dB(idx),'-o');
      
 %% Plot FEKO simulation results
-     data=readtable('C:\Users\chenr\Desktop\EnergyBall\V8_Git\Patterns\dipole\ModelvsFEKO\Experiment9\2singleringCP_freespace_vertical\combined_power.txt');
+     data=readtable('C:\Users\chenr\Desktop\EnergyBall\V8_Git\Patterns\dipole\ModelvsFEKO\Experiment11\2dipole_ground_er4_1to2_PEC\combined_power.txt');
      plot(data.distance,data.power,'-d')
     ylim([-30 30])
     

@@ -161,8 +161,9 @@ pattern={@(theta,phi) 1
 receiver_pattern=@(theta,phi) 1.8*sin(theta)^2;%pattern for receivers
 groundLevel=0;%hight of ground and ceiling, for building walls
 ceilingLevel=2.6;
-wall_permitivity=4;
-wall_conductivity=0.0105;
+wall_permitivity=6;
+wall_conductivity=0;
+wall_thickness=Inf;
 losFlag=1;%Line of sight
 refFlag=1;%first reflection
 secRefFlag=1;%second reflection
@@ -213,10 +214,10 @@ walls=ReflectorGroup();
 
 for i=1:size(wallxyz1,1)
     if i~=size(wallxyz1,1)%for normal walls
-        wall=Reflector([wallxyz1(i,:);wallxyz2(i,:);wallxyz3(i,:);wallxyz4(i,:)],wall_permitivity,frequency,wall_conductivity);
+        wall=Reflector([wallxyz1(i,:);wallxyz2(i,:);wallxyz3(i,:);wallxyz4(i,:)],wall_permitivity,frequency,wall_conductivity,wall_thickness);
         walls.push(wall);
     else %different permitivity definition for the final reflecting wall
-        wall=Reflector([wallxyz1(i,:);wallxyz2(i,:);wallxyz3(i,:);wallxyz4(i,:)],20,frequency,5);
+        wall=Reflector([wallxyz1(i,:);wallxyz2(i,:);wallxyz3(i,:);wallxyz4(i,:)],11,frequency,wall_conductivity,wall_thickness);
         walls.push(wall);
     end
 end
@@ -230,10 +231,10 @@ if addGroundCeiling==1
 
     ground_corners=[wall_min(1),wall_min(2),wall_min(3);wall_min(1),wall_max(2),wall_min(3);wall_max(1),wall_max(2),wall_min(3);wall_max(1),wall_min(2),wall_min(3)];
     ceiling_corners=[wall_min(1),wall_min(2),wall_max(3);wall_min(1),wall_max(2),wall_max(3);wall_max(1),wall_max(2),wall_max(3);wall_max(1),wall_min(2),wall_max(3)];
-    ground=Reflector(ground_corners,30,frequency,wall_conductivity);
+    ground=Reflector(ground_corners,4,frequency,wall_conductivity,wall_thickness);
     ground.isgroundceiling=1;%Set this flag to 1 so that the wavetype can be distinguished from walls
     %ground.ishighlighted=1;%highlight any wall in plotting if needed
-    ceiling=Reflector(ceiling_corners,30,frequency,wall_conductivity);
+    ceiling=Reflector(ceiling_corners,5.5,frequency,wall_conductivity,wall_thickness);
     ceiling.istransparent=1;%set ceiling to transparent so that can see through it
     ceiling.isgroundceiling=1;
     walls.push(ground);
@@ -355,7 +356,7 @@ if simulate_over_a_line==1
     y=RxY;
     idx=find(Rx.xyz(:,2)==RxY);
     figure()
-    plot(Rx.xyz(idx,1),Rx.TotalRssi_dB(idx),'-x');
+    %plot(Rx.xyz(idx,1),Rx.TotalRssi_dB(idx),'-x');
     xlabel('X - Metre')
     ylabel('Signal Strength - dBm')
     title(['Signal Strength at Y=',num2str(y)]);
@@ -371,6 +372,6 @@ if simulate_over_a_line==1
     %legend('Simulation','Measured')
     %Plot effective result
     Rx.eff_dB=10*log10(abs(Rx.LosRssi.eff+Rx.RefRssi.eff+Rx.secRefRssi.eff).^2)+30;
-    %plot(Rx.xyz(idx,1),Rx.eff_dB(idx),'-o');
+    plot(Rx.xyz(idx,1),Rx.eff_dB(idx),'-o');
     ylim([-30 10])
 end
