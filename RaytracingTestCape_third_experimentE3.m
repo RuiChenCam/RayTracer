@@ -135,7 +135,7 @@ frequency=866e6;
 power=[1
         ];%Power in Watt, define as a m by 1 array
 
-location=[7.7,5.65 ,1.5;
+location=[7.7,5.7 ,1.5;
            ]; %location of transmitters
 % phase=[rand(1)*2*pi
 %        rand(1)*2*pi
@@ -175,8 +175,8 @@ gain_phase=1;
 simulate_over_a_line=1; %simulate over only a line instead of showing surface results
 %simulation area setups
 
-mesh_.xNodeNum = 800;   % Keep the x and y mesh size the same, increase the size for better resolution and especially if you're increasing the frequency
-mesh_.yNodeNum = 800;
+mesh_.xNodeNum = 400;   % Keep the x and y mesh size the same, increase the size for better resolution and especially if you're increasing the frequency
+mesh_.yNodeNum = 400;
 mesh_.zNodeNum = 1;
 
 % The boundary of the analysis
@@ -277,7 +277,7 @@ Rx.xyz = [reshape(X,[],1,1),reshape(Y,[],1,1),reshape(Z,[],1,1)];
 if simulate_over_a_line==1
     Rx.xyz=linspace(boundary(1,1),boundary(1,2),mesh_.xNodeNum);
     Rx.xyz=Rx.xyz';
-    RxY=5.65;
+    RxY=5.63;
     Rx.xyz(:,2)=RxY;
     Rx.xyz(:,3)=zplaneHeight;
 end
@@ -356,7 +356,7 @@ if simulate_over_a_line==1
     y=RxY;
     idx=find(Rx.xyz(:,2)==RxY);
     figure()
-    plot(Rx.xyz(idx,1),Rx.TotalRssi_dB(idx),'-x');
+    %plot(Rx.xyz(idx,1),Rx.TotalRssi_dB(idx),'-x');
     xlabel('X - Metre')
     ylabel('Signal Strength - dBm')
     title(['Signal Strength at Y=',num2str(y)]);
@@ -372,8 +372,8 @@ if simulate_over_a_line==1
     %legend('Simulation','Measured')
     
     %Plot effective result
-    Rx.eff_dB=10*log10(abs(Rx.LosRssi.eff+Rx.RefRssi.eff+Rx.secRefRssi.eff).^2)+30;
-    %plot(Rx.xyz(idx,1),Rx.eff_dB(idx),'-o');
+    Rx.eff_dB=10*log10(abs(Rx.LosRssi.eff.*exp(1j*angle(Rx.LosRssi.pho))+Rx.RefRssi.eff.*exp(1j*angle(Rx.RefRssi.pho))+Rx.secRefRssi.eff.*exp(1j*angle(Rx.secRefRssi.pho))).^2)+30;
+    plot(Rx.xyz(idx,1),Rx.eff_dB(idx),'-o');
     ylim([-30 10])
     
 end

@@ -41,6 +41,7 @@ function [LosRssi,RefRssi,secRefRssi] = RayEngine(losFlag,refFlag,secRefFlag,RxP
     Rx.LosRssi.z=Rx.LosRssi.x;
     Rx.LosRssi.tot=Rx.LosRssi.x;
     Rx.LosRssi.eff=Rx.LosRssi.x; %The concept of effective total gain
+    Rx.LosRssi.pho=Rx.LosRssi.x;
     
     if losFlag==1
         [losBeamAngle.Tx.Zen,losBeamAngle.Tx.Azi]=transmitters.angle(Rx.xyz);
@@ -92,6 +93,7 @@ function [LosRssi,RefRssi,secRefRssi] = RayEngine(losFlag,refFlag,secRefFlag,RxP
                               sqrt( transmitters.members(a).power*effective_gain*...
                               (transmitters.members(a).lambda/(4*pi))^2 )*abs(pho_tx*pho_rx.') *...
                               1/RxTx.dist(b,:,a) *exp(1j*(-transmitters.members(a).k*RxTx.dist(b,:,a)+transmitters.members(a).phase)); %add additional phase terms by 3 polarizations;
+                Rx.LosRssi.pho(b)=pho_tx*pho_rx.';
             end
         end
         Rx.LosRssi.tot=Rx.LosRssi.x+Rx.LosRssi.y+Rx.LosRssi.z;
@@ -108,6 +110,7 @@ function [LosRssi,RefRssi,secRefRssi] = RayEngine(losFlag,refFlag,secRefFlag,RxP
     Rx.RefRssi.z=Rx.RefRssi.x;
     Rx.RefRssi.tot=Rx.RefRssi.x;
     Rx.RefRssi.eff=Rx.RefRssi.x;
+    Rx.RefRssi.pho=Rx.RefRssi.x;
     if refFlag==1%first reflection
         
         for a=1:transmitters.getnum
@@ -192,6 +195,7 @@ function [LosRssi,RefRssi,secRefRssi] = RayEngine(losFlag,refFlag,secRefFlag,RxP
                                           sqrt( transmitters.members(a).power*effective_gain*...
                                           (transmitters.members(a).lambda/(4*pi))^2 )*abs(pho_tx*pho_rx.') *...
                                           1/(Tx2Refdist+Rx2Refdist) *exp(1j*(-transmitters.members(a).k*(Tx2Refdist+Rx2Refdist)+transmitters.members(a).phase)); %add additional phase terms by 3 polarizations;
+                        Rx.RefRssi.pho(b)=pho_tx*pho_rx.';
 
                         
 
@@ -213,6 +217,7 @@ function [LosRssi,RefRssi,secRefRssi] = RayEngine(losFlag,refFlag,secRefFlag,RxP
     Rx.secRefRssi.z=Rx.secRefRssi.x;
     Rx.secRefRssi.tot=Rx.secRefRssi.x;
     Rx.secRefRssi.eff=Rx.secRefRssi.x;
+    Rx.secRefRssi.pho=Rx.secRefRssi.x;
     if secRefFlag==1
         
         for a=1:transmitters.getnum
@@ -341,6 +346,7 @@ function [LosRssi,RefRssi,secRefRssi] = RayEngine(losFlag,refFlag,secRefFlag,RxP
                                                   sqrt( transmitters.members(a).power*effective_gain*...
                                                   (transmitters.members(a).lambda/(4*pi))^2 )*abs(pho_tx*pho_rx.')*...
                                                   1/(d1+d2+d3) *exp(1j*(-transmitters.members(a).k*(d1+d2+d3)+transmitters.members(a).phase)); %add additional phase terms by 3 polarizations;
+                                Rx.secRefRssi.pho(b)=pho_tx*pho_rx.';
                             end
 
                         else

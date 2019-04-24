@@ -163,7 +163,7 @@ receiver_pattern=@(theta,phi) 1.8*sin(theta)^2;%pattern for receivers
 groundLevel=0;%hight of ground and ceiling, for building walls
 ceilingLevel=1;
 wall_permitivity=4;
-wall_conductivity=10^7;
+wall_conductivity=0.5;
 wall_thickness=Inf;
 losFlag=1;%Line of sight
 refFlag=1;%first reflection
@@ -224,13 +224,13 @@ if manual_define_ground==0
     end
 else
 %% If we just define a ground by hand
-        wall=Reflector([-10 -10 0;10 -10 0;10 10 0;-10 10 0],wall_permitivity,frequency,wall_conductivity,Inf);
+        wall=Reflector([-10 -10 0;10 -10 0;10 10 0;-10 10 0],wall_permitivity,frequency,wall_conductivity,wall_thickness);
         wall.isgroundceiling=1;
         walls.push(wall);
         
-%         wall=Reflector([-10 -10 1;10 -10 1;10 10 1;-10 10 1],wall_permitivity,frequency,wall_conductivity,wall_thickness);
-%         wall.isgroundceiling=1;
-%         walls.push(wall);
+        wall=Reflector([-10 -10 1;10 -10 1;10 10 1;-10 10 1],wall_permitivity,frequency,1e7,wall_thickness);
+        wall.isgroundceiling=1;
+        walls.push(wall);
         
         
 end
@@ -386,11 +386,11 @@ if simulate_over_a_line==1
 %     %legend('Simulation','Measured')
 %     %Plot effective result
 %% Plot effective gain results
-     Rx.eff_dB=10*log10(abs(Rx.LosRssi.eff+Rx.RefRssi.eff+Rx.secRefRssi.eff).^2)+30;
+     Rx.eff_dB=10*log10(abs(Rx.LosRssi.eff.*exp(1j*angle(Rx.LosRssi.pho))+Rx.RefRssi.eff.*exp(1j*angle(Rx.RefRssi.pho))+Rx.secRefRssi.eff.*exp(1j*angle(Rx.secRefRssi.pho))).^2)+30;
      plot(Rx.xyz(idx,1),Rx.eff_dB(idx),'-o');
      
 %% Plot FEKO simulation results
-     data=readtable('C:\Users\chenr\Desktop\EnergyBall\V8_Git\Patterns\dipole\ModelvsFEKO\Experiment11\2dipole_ground_er4_1to2_PEC\combined_power.txt');
+     data=readtable('C:\Users\chenr\Desktop\EnergyBall\V8_Git\Patterns\dipole\ModelvsFEKO\Experiment36\wall\combined_power.txt');
      plot(data.distance,data.power,'-d')
     ylim([-30 30])
     
