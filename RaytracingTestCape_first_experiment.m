@@ -163,7 +163,7 @@ groundLevel=0;%hight of ground and ceiling, for building walls
 ceilingLevel=2.6;
 wall_permitivity=6;
 wall_conductivity=0;
-wall_thickness=Inf;
+wall_thickness=0.13;
 losFlag=1;%Line of sight
 refFlag=1;%first reflection
 secRefFlag=1;%second reflection
@@ -217,7 +217,7 @@ for i=1:size(wallxyz1,1)
         wall=Reflector([wallxyz1(i,:);wallxyz2(i,:);wallxyz3(i,:);wallxyz4(i,:)],wall_permitivity,frequency,wall_conductivity,wall_thickness);
         walls.push(wall);
     else %different permitivity definition for the final reflecting wall
-        wall=Reflector([wallxyz1(i,:);wallxyz2(i,:);wallxyz3(i,:);wallxyz4(i,:)],11,frequency,wall_conductivity,wall_thickness);
+        wall=Reflector([wallxyz1(i,:);wallxyz2(i,:);wallxyz3(i,:);wallxyz4(i,:)],6,frequency,wall_conductivity,wall_thickness);
         walls.push(wall);
     end
 end
@@ -316,7 +316,7 @@ else
 
 end
 if losFlag==1%Line of sight
-    Rx.LosRssi_dB=10*log10(abs(Rx.LosRssi.tot).^2)+30;
+    Rx.LosRssi_dB=10*log10(abs(Rx.LosRssi.eff).^2)+30;
     if simulate_over_a_line==0
         plotResult(Rx.LosRssi_dB,zplaneHeight,X,Y,mesh_,'LOS Only',power,boundary)
     end
@@ -325,7 +325,7 @@ end
 %%
 if refFlag==1%first reflection
 
-    Rx.RefRssi_dB=10*log10(abs(Rx.RefRssi.tot).^2)+30;
+    Rx.RefRssi_dB=10*log10(abs(Rx.RefRssi.eff).^2)+30;
     %% Plot First Ref image
     if simulate_over_a_line==0
         plotResult(Rx.RefRssi_dB,zplaneHeight,X,Y,mesh_,'First Reflection Only',power,boundary)
@@ -335,7 +335,7 @@ end
 
 %%
 if secRefFlag==1%second reflection
-    Rx.secRefRssi_dB=10*log10(abs(Rx.secRefRssi.tot).^2)+30;
+    Rx.secRefRssi_dB=10*log10(abs(Rx.secRefRssi.eff).^2)+30;
     %% Plot Second Reflection image
     if simulate_over_a_line==0
         plotResult(Rx.secRefRssi_dB,zplaneHeight,X,Y,mesh_,'Second Reflection Only',power,boundary)
@@ -344,7 +344,7 @@ if secRefFlag==1%second reflection
 
 end
 
-Rx.TotalRssi_dB=10*log10(abs(losFlag*Rx.LosRssi.tot+refFlag*Rx.RefRssi.tot+secRefFlag*Rx.secRefRssi.tot).^2)+30;
+Rx.TotalRssi_dB=10*log10(abs(losFlag*Rx.LosRssi.eff+refFlag*Rx.RefRssi.eff+secRefFlag*Rx.secRefRssi.eff).^2)+30;
 %% Plot Total Reflection image
 if simulate_over_a_line==0
     plotResult(Rx.TotalRssi_dB,zplaneHeight,X,Y,mesh_,'Total',power,boundary)

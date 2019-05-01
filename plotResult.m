@@ -5,11 +5,11 @@ global walls transmitters
     for idx=1:numel(zplaneHeight)
         data_part=data((idx-1)*mesh_.yNodeNum*mesh_.xNodeNum+1:idx*mesh_.yNodeNum*mesh_.xNodeNum);
         data_part=reshape(data_part,mesh_.yNodeNum,mesh_.xNodeNum);
-        figure()
+        f=figure();
         hold on
         %transmitters.drawpattern('followPos')
         walls.drawself('excludeGround','color',min(data_part(:)));
-        transmitters.drawpos
+        %transmitters.drawpos
         surf(X(:,:,idx),Y(:,:,idx),data_part,'EdgeColor','none')
         view(0,90)
         c=colorbar;
@@ -21,6 +21,7 @@ global walls transmitters
         xlabel('X - metre')
         ylabel('Y - metre')
         zlabel('Z - metre')
+        colormap(f,jet);
     end
 end
 

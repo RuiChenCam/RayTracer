@@ -132,10 +132,12 @@
 clear;
 %% Parameters
 frequency=866e6;
-power=[1
+power=[1;
+    1
         ];%Power in Watt, define as a m by 1 array
 
-location=[0,0 ,0.5;
+location=[0,-1 ,0.5;
+          2,1 ,1
            ]; %location of transmitters
 % phase=[rand(1)*2*pi
 %        rand(1)*2*pi
@@ -147,14 +149,16 @@ location=[0,0 ,0.5;
 %        rand(1)*2*pi
 %         ];%phase, in radians
     
-phase=[0
+phase=[0;
+    0
         ];%phase, in radians
     
 
-orientation=[90 -0 -90
+orientation=[0 0 0;
+             0 0 0
 
             ]; %orientation, in degrees
-Rx_orientation=[90 -0 -90];
+Rx_orientation=[0 0 0];
 %pattern=@(theta,phi) 1.5*sin(theta)^2;%standard pattern for a dipole
 patternFromFile=1;% Enable this flag when you want to use the measured antenna pattern for simulation
 pattern={@(theta,phi) 1
@@ -166,25 +170,25 @@ wall_permitivity=4;
 wall_conductivity=0.5;
 wall_thickness=Inf;
 losFlag=1;%Line of sight
-refFlag=1;%first reflection
-secRefFlag=1;%second reflection
+refFlag=0;%first reflection
+secRefFlag=0;%second reflection
 %polarizationSwap=1;%Swap polarization of walls and ground, ceilings
 addGroundCeiling=0;%automatically add a ground and ceiling
-manual_define_ground=1; %define ground by hand
+manual_define_ground=0; %define ground by hand
 global gain_phase; %calculate the gain phase or not
 gain_phase=1;
 
-simulate_over_a_line=1; %simulate over only a line instead of showing surface results
+simulate_over_a_line=0; %simulate over only a line instead of showing surface results
 %simulation area setups
 
-mesh_.xNodeNum = 21;   % Keep the x and y mesh size the same, increase the size for better resolution and especially if you're increasing the frequency
-mesh_.yNodeNum = 21;
+mesh_.xNodeNum = 151;   % Keep the x and y mesh size the same, increase the size for better resolution and especially if you're increasing the frequency
+mesh_.yNodeNum = 151;
 mesh_.zNodeNum = 1;
 
 % The boundary of the analysis
 boundary = [
-            1,2
-            -5,5
+            -0.5,2.5
+            -1,1
             0,3
             ];  
         
@@ -330,7 +334,7 @@ else
 
 end
 if losFlag==1%Line of sight
-    Rx.LosRssi_dB=10*log10(abs(Rx.LosRssi.tot).^2)+30;
+    Rx.LosRssi_dB=10*log10(abs(Rx.LosRssi.eff).^2)+30;
     if simulate_over_a_line==0
         plotResult(Rx.LosRssi_dB,zplaneHeight,X,Y,mesh_,'LOS Only',power,boundary)
     end
@@ -339,7 +343,7 @@ end
 %%
 if refFlag==1%first reflection
 
-    Rx.RefRssi_dB=10*log10(abs(Rx.RefRssi.tot).^2)+30;
+    Rx.RefRssi_dB=10*log10(abs(Rx.RefRssi.eff).^2)+30;
     %% Plot First Ref image
     if simulate_over_a_line==0
         plotResult(Rx.RefRssi_dB,zplaneHeight,X,Y,mesh_,'First Reflection Only',power,boundary)
@@ -349,7 +353,7 @@ end
 
 %%
 if secRefFlag==1%second reflection
-    Rx.secRefRssi_dB=10*log10(abs(Rx.secRefRssi.tot).^2)+30;
+    Rx.secRefRssi_dB=10*log10(abs(Rx.secRefRssi.eff).^2)+30;
     %% Plot Second Reflection image
     if simulate_over_a_line==0
         plotResult(Rx.secRefRssi_dB,zplaneHeight,X,Y,mesh_,'Second Reflection Only',power,boundary)
@@ -358,7 +362,7 @@ if secRefFlag==1%second reflection
 
 end
 
-Rx.TotalRssi_dB=10*log10(abs(losFlag*Rx.LosRssi.tot+refFlag*Rx.RefRssi.tot+secRefFlag*Rx.secRefRssi.tot).^2)+30;
+Rx.TotalRssi_dB=10*log10(abs(losFlag*Rx.LosRssi.eff+refFlag*Rx.RefRssi.eff+secRefFlag*Rx.secRefRssi.eff).^2)+30;
 %% Plot Total Reflection image
 if simulate_over_a_line==0
     plotResult(Rx.TotalRssi_dB,zplaneHeight,X,Y,mesh_,'Total',power,boundary)
@@ -390,7 +394,7 @@ if simulate_over_a_line==1
      plot(Rx.xyz(idx,1),Rx.eff_dB(idx),'-o');
      
 %% Plot FEKO simulation results
-     data=readtable('C:\Users\chenr\Desktop\EnergyBall\V8_Git\Patterns\dipole\ModelvsFEKO\Experiment36\wall\combined_power.txt');
+     data=readtable('C:\Users\chenr\Desktop\EnergyBall\V8_Git\Patterns\dipole\ModelvsFEKO\Experiment35\wall\combined_power.txt');
      plot(data.distance,data.power,'-d')
     ylim([-30 30])
     

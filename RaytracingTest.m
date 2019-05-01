@@ -161,8 +161,8 @@ groundLevel=0;%hight of ground and ceiling, for building walls
 ceilingLevel=4;
 wall_permitivity=6;
 losFlag=1;%Line of sight
-refFlag=0;%first reflection
-secRefFlag=0;%second reflection
+refFlag=1;%first reflection
+secRefFlag=1;%second reflection
 wall_conductivity=0;%Swap polarization of walls and ground, ceilings
 addGroundCeiling=0;%automatically add a ground and ceiling
 
