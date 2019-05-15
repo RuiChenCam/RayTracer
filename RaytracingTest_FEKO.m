@@ -133,11 +133,27 @@ clear;
 %% Parameters
 frequency=866e6;
 power=[1;
-    1
+
+%         1;
+%         1;
+%         1;
+%         1;
+        
+
         ];%Power in Watt, define as a m by 1 array
 
-location=[0,-1 ,0.5;
-          2,1 ,1
+location=[1,1,1;
+          7,7,1;
+          7,1,1;
+          1,7,1;
+%           4,1,1;
+%           7,4,1;
+%           1,4,1;
+%           4,7,1
+          
+          
+
+          
            ]; %location of transmitters
 % phase=[rand(1)*2*pi
 %        rand(1)*2*pi
@@ -149,29 +165,47 @@ location=[0,-1 ,0.5;
 %        rand(1)*2*pi
 %         ];%phase, in radians
     
-phase=[0;
-    0
+phase=[18.1375*4.2426;
+       18.1375*4.2426;
+       18.1375*4.2426;
+       18.1375*4.2426;
+%        18.1375*3;
+%        18.1375*3
+%        18.1375*3;
+%        18.1375*3
+
+    
         ];%phase, in radians
     
 
-orientation=[0 0 0;
-             0 0 0
+orientation=[45 0 0;
+             0 0 0;
+             0 0 0;
+             0 0 0;
+%              0 0 0;
+%              0 0 0;
+%              0 0 0;
+%              0 0 0
+             
+
+             
 
             ]; %orientation, in degrees
 Rx_orientation=[0 0 0];
+data_address='C:\Users\chenr\Desktop\EnergyBall\V8_Git\Patterns\dipole\ModelvsFEKO\Experiment32\er4\combined_power.txt';
 %pattern=@(theta,phi) 1.5*sin(theta)^2;%standard pattern for a dipole
 patternFromFile=1;% Enable this flag when you want to use the measured antenna pattern for simulation
 pattern={@(theta,phi) 1
         };%antenna pattern, defined as a cell array, use pattern{n} to access them
 receiver_pattern=@(theta,phi) 1.8*sin(theta)^2;%pattern for receivers
 groundLevel=0;%hight of ground and ceiling, for building walls
-ceilingLevel=1;
-wall_permitivity=4;
-wall_conductivity=0.5;
-wall_thickness=Inf;
+ceilingLevel=2.6;
+wall_permitivity=10;
+wall_conductivity=Inf;
+wall_thickness=0.13;
 losFlag=1;%Line of sight
-refFlag=0;%first reflection
-secRefFlag=0;%second reflection
+refFlag=1;%first reflection
+secRefFlag=1;%second reflection
 %polarizationSwap=1;%Swap polarization of walls and ground, ceilings
 addGroundCeiling=0;%automatically add a ground and ceiling
 manual_define_ground=0; %define ground by hand
@@ -181,14 +215,14 @@ gain_phase=1;
 simulate_over_a_line=0; %simulate over only a line instead of showing surface results
 %simulation area setups
 
-mesh_.xNodeNum = 151;   % Keep the x and y mesh size the same, increase the size for better resolution and especially if you're increasing the frequency
-mesh_.yNodeNum = 151;
+mesh_.xNodeNum = 201;   % Keep the x and y mesh size the same, increase the size for better resolution and especially if you're increasing the frequency
+mesh_.yNodeNum = 201;
 mesh_.zNodeNum = 1;
 
 % The boundary of the analysis
 boundary = [
-            -0.5,2.5
-            -1,1
+            0,8
+            0,8
             0,3
             ];  
         
@@ -232,9 +266,9 @@ else
         wall.isgroundceiling=1;
         walls.push(wall);
         
-        wall=Reflector([-10 -10 1;10 -10 1;10 10 1;-10 10 1],wall_permitivity,frequency,1e7,wall_thickness);
-        wall.isgroundceiling=1;
-        walls.push(wall);
+%         wall=Reflector([-10 -10 1;10 -10 1;10 10 1;-10 10 1],wall_permitivity,frequency,1e7,wall_thickness);
+%         wall.isgroundceiling=1;
+%         walls.push(wall);
         
         
 end
@@ -268,8 +302,8 @@ zlabel('Z - metre')
 
 title('Current Simulation Configuration')
 
-%transmitters.drawpattern('followPos')
-transmitters.drawpattern()
+transmitters.drawpattern('followPos')
+%transmitters.drawpattern()
 walls.drawself();
 view(-45, 45);
 %% Meshing
@@ -374,11 +408,11 @@ if simulate_over_a_line==1
     y=RxY;
     idx=find(Rx.xyz(:,2)==RxY);
     figure()
-    plot(Rx.xyz(idx,1),Rx.TotalRssi_dB(idx),'-x');
-    xlabel('X - Metre')
+    %plot(Rx.xyz(idx,1),Rx.TotalRssi_dB(idx),'-x');
+    xlabel('X - Meter')
     ylabel('Signal Strength - dBm')
-    title(['Signal Strength at Y=',num2str(y)]);
-    vline(location(1),'r-','Antenna Position')
+    %title(['Signal Strength at Y=',num2str(y)]);
+    %vline(location(1),'r-','Antenna Position')
 
 %     data=readtable('C:\Users\chenr\Desktop\EnergyBall\V8_Git\Patterns\dipole\ModelvsFEKO\dipole_freespace_result.txt');
 %     loc=data.loc;
@@ -389,14 +423,15 @@ if simulate_over_a_line==1
 %     plot(loc,power,'r-o');
 %     %legend('Simulation','Measured')
 %     %Plot effective result
-%% Plot effective gain results
-     Rx.eff_dB=10*log10(abs(Rx.LosRssi.eff.*exp(1j*angle(Rx.LosRssi.pho))+Rx.RefRssi.eff.*exp(1j*angle(Rx.RefRssi.pho))+Rx.secRefRssi.eff.*exp(1j*angle(Rx.secRefRssi.pho))).^2)+30;
-     plot(Rx.xyz(idx,1),Rx.eff_dB(idx),'-o');
-     
 %% Plot FEKO simulation results
-     data=readtable('C:\Users\chenr\Desktop\EnergyBall\V8_Git\Patterns\dipole\ModelvsFEKO\Experiment35\wall\combined_power.txt');
+     data=readtable(data_address);
      plot(data.distance,data.power,'-d')
     ylim([-30 30])
+%% Plot effective gain results
+     Rx.eff_dB=10*log10(abs(Rx.LosRssi.eff.*exp(1j*angle(Rx.LosRssi.pho))+Rx.RefRssi.eff.*exp(1j*angle(Rx.RefRssi.pho))+Rx.secRefRssi.eff.*exp(1j*angle(Rx.secRefRssi.pho))).^2)+30;
+     plot(Rx.xyz(idx,1),Rx.eff_dB(idx),'-');
+     
+
     
-    legend('3 polarization','effective gain','FEKO')
+    legend('FEKO','Proposed Model')
 end

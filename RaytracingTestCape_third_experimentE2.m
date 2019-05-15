@@ -135,7 +135,7 @@ frequency=866e6;
 power=[1
         ];%Power in Watt, define as a m by 1 array
 
-location=[7.7,5.65 ,1.5;
+location=[7.7,5.75 ,1.5;
            ]; %location of transmitters
 % phase=[rand(1)*2*pi
 %        rand(1)*2*pi
@@ -163,7 +163,7 @@ groundLevel=0;%hight of ground and ceiling, for building walls
 ceilingLevel=2.6;
 wall_permitivity=6;
 wall_conductivity=0;
-wall_thickness=Inf;
+wall_thickness=0.13;
 losFlag=1;%Line of sight
 refFlag=1;%first reflection
 secRefFlag=1;%second reflection
@@ -176,8 +176,8 @@ gain_phase=1;
 simulate_over_a_line=1; %simulate over only a line instead of showing surface results
 %simulation area setups
 
-mesh_.xNodeNum = 800;   % Keep the x and y mesh size the same, increase the size for better resolution and especially if you're increasing the frequency
-mesh_.yNodeNum = 800;
+mesh_.xNodeNum = 400;   % Keep the x and y mesh size the same, increase the size for better resolution and especially if you're increasing the frequency
+mesh_.yNodeNum = 400;
 mesh_.zNodeNum = 1;
 
 % The boundary of the analysis
@@ -218,7 +218,7 @@ for i=1:size(wallxyz1,1)
         wall=Reflector([wallxyz1(i,:);wallxyz2(i,:);wallxyz3(i,:);wallxyz4(i,:)],wall_permitivity,frequency,wall_conductivity,wall_thickness);
         walls.push(wall);
     else %different permitivity definition for the final reflecting wall
-        wall=Reflector([wallxyz1(i,:);wallxyz2(i,:);wallxyz3(i,:);wallxyz4(i,:)],11,frequency,wall_conductivity,wall_thickness);
+        wall=Reflector([wallxyz1(i,:);wallxyz2(i,:);wallxyz3(i,:);wallxyz4(i,:)],6,frequency,wall_conductivity,wall_thickness);
         walls.push(wall);
     end
 end
@@ -285,7 +285,7 @@ end
 %% Define Rx also as objects
 global receivers;
 receivers=RadioGroup();
-receiver=Radio(frequency,1,0,Rx.xyz(1,:),[-45 0 0]);
+receiver=Radio(frequency,1,0,Rx.xyz(1,:),[45 0 0]);
 receivers.push(receiver);
 %Here we just initialte one receiver to store the pattern data
 %Because if we want a heatmap for a layer, there is often thousands of
@@ -358,15 +358,15 @@ if simulate_over_a_line==1
     idx=find(Rx.xyz(:,2)==RxY);
     figure()
     %plot(Rx.xyz(idx,1),Rx.TotalRssi_dB(idx),'-x');
-    xlabel('X - Metre')
+    xlabel('X - Meter')
     ylabel('Signal Strength - dBm')
     title(['Signal Strength at Y=',num2str(y)]);
-    vline(location(1),'r-','Antenna Position')
+    %vline(location(1),'r-','Antenna Position')
 
     data=readtable('record_original - third.xlsx');
     loc=data.loc2;
     power=data.power2;
-    loc=loc+7.2+0.5+0.17;
+    loc=loc+7.2+0.5+0.17+0.07-0.34;
     power=40-power-19.4;
     hold on;
     plot(loc,power,'r-o');
@@ -376,5 +376,6 @@ if simulate_over_a_line==1
     Rx.eff_dB=10*log10(abs(Rx.LosRssi.eff.*exp(1j*angle(Rx.LosRssi.pho))+Rx.RefRssi.eff.*exp(1j*angle(Rx.RefRssi.pho))+Rx.secRefRssi.eff.*exp(1j*angle(Rx.secRefRssi.pho))).^2)+30;
     plot(Rx.xyz(idx,1),Rx.eff_dB(idx),'-o');
     ylim([-30 10])
+    legend('Simulation','Measured')
     
 end

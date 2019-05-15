@@ -8,13 +8,13 @@ global walls transmitters
         f=figure();
         hold on
         %transmitters.drawpattern('followPos')
-        walls.drawself('excludeGround','color',min(data_part(:)));
+        %walls.drawself('excludeGround','color',min(data_part(:)));
         %transmitters.drawpos
         surf(X(:,:,idx),Y(:,:,idx),data_part,'EdgeColor','none')
         view(0,90)
         c=colorbar;
         c.Label.String = 'Power - dBm';
-        caxis([-50 10*log10(max(power))+30])
+        caxis([-50 10*log10(max(power))+20])
         title([title_string,' @ Z-Plane height of ',num2str(zplaneHeight(idx),'%10.2f')]);
         xlim([boundary(1,1),boundary(1,2)]);
         ylim([boundary(2,1),boundary(2,2)]);

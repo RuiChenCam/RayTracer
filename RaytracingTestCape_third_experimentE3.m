@@ -135,7 +135,7 @@ frequency=866e6;
 power=[1
         ];%Power in Watt, define as a m by 1 array
 
-location=[7.7,5.7 ,1.5;
+location=[7.7,5.75 ,1.5;
            ]; %location of transmitters
 % phase=[rand(1)*2*pi
 %        rand(1)*2*pi
@@ -163,7 +163,7 @@ groundLevel=0;%hight of ground and ceiling, for building walls
 ceilingLevel=2.6;
 wall_permitivity=6;
 wall_conductivity=0;
-wall_thickness=Inf;
+wall_thickness=0.13;
 losFlag=1;%Line of sight
 refFlag=1;%first reflection
 secRefFlag=1;%second reflection
@@ -217,7 +217,7 @@ for i=1:size(wallxyz1,1)
         wall=Reflector([wallxyz1(i,:);wallxyz2(i,:);wallxyz3(i,:);wallxyz4(i,:)],wall_permitivity,frequency,wall_conductivity,wall_thickness);
         walls.push(wall);
     else %different permitivity definition for the final reflecting wall
-        wall=Reflector([wallxyz1(i,:);wallxyz2(i,:);wallxyz3(i,:);wallxyz4(i,:)],11,frequency,wall_conductivity,wall_thickness);
+        wall=Reflector([wallxyz1(i,:);wallxyz2(i,:);wallxyz3(i,:);wallxyz4(i,:)],6,frequency,wall_conductivity,wall_thickness);
         walls.push(wall);
     end
 end
@@ -277,7 +277,7 @@ Rx.xyz = [reshape(X,[],1,1),reshape(Y,[],1,1),reshape(Z,[],1,1)];
 if simulate_over_a_line==1
     Rx.xyz=linspace(boundary(1,1),boundary(1,2),mesh_.xNodeNum);
     Rx.xyz=Rx.xyz';
-    RxY=5.63;
+    RxY=5.65;
     Rx.xyz(:,2)=RxY;
     Rx.xyz(:,3)=zplaneHeight;
 end
@@ -357,10 +357,10 @@ if simulate_over_a_line==1
     idx=find(Rx.xyz(:,2)==RxY);
     figure()
     %plot(Rx.xyz(idx,1),Rx.TotalRssi_dB(idx),'-x');
-    xlabel('X - Metre')
+    xlabel('X - Meter')
     ylabel('Signal Strength - dBm')
     title(['Signal Strength at Y=',num2str(y)]);
-    vline(location(1),'r-','Antenna Position')
+    %vline(location(1),'r-','Antenna Position')
 
     data=readtable('record_original - third.xlsx');
     loc=data.loc3;
@@ -369,11 +369,12 @@ if simulate_over_a_line==1
     power=40-power-19.4;
     hold on;
     plot(loc,power,'r-o');
-    %legend('Simulation','Measured')
+    
     
     %Plot effective result
     Rx.eff_dB=10*log10(abs(Rx.LosRssi.eff.*exp(1j*angle(Rx.LosRssi.pho))+Rx.RefRssi.eff.*exp(1j*angle(Rx.RefRssi.pho))+Rx.secRefRssi.eff.*exp(1j*angle(Rx.secRefRssi.pho))).^2)+30;
     plot(Rx.xyz(idx,1),Rx.eff_dB(idx),'-o');
     ylim([-30 10])
+    legend('Simulation','Measured')
     
 end

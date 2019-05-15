@@ -245,11 +245,11 @@ end
 %% Draw current simulation scenario
 figure(1)
 hold on;
-xlabel('X - metre')
-ylabel('Y - metre')
-zlabel('Z - metre')
+xlabel('X - meter')
+ylabel('Y - meter')
+zlabel('Z - meter')
 
-title('Current Simulation Configuration')
+%title('Current Simulation Configuration')
 
 %transmitters.drawpattern('followPos')
 transmitters.drawpos()
@@ -357,10 +357,10 @@ if simulate_over_a_line==1
     idx=find(Rx.xyz(:,2)==RxY);
     figure()
     %plot(Rx.xyz(idx,1),Rx.TotalRssi_dB(idx),'-x');
-    xlabel('X - Metre')
+    xlabel('X - Meter')
     ylabel('Signal Strength - dBm')
     title(['Signal Strength at Y=',num2str(y)]);
-    vline(location(1),'r-','Antenna Position')
+    %vline(location(1),'r-','Antenna Position')
 
     data=readtable('record1.xlsx');
     loc=data.loc;
@@ -374,4 +374,5 @@ if simulate_over_a_line==1
     Rx.eff_dB=10*log10(abs(Rx.LosRssi.eff.*exp(1j*angle(Rx.LosRssi.pho))+Rx.RefRssi.eff.*exp(1j*angle(Rx.RefRssi.pho))+Rx.secRefRssi.eff.*exp(1j*angle(Rx.secRefRssi.pho))).^2)+30;
     plot(Rx.xyz(idx,1),Rx.eff_dB(idx),'-o');
     ylim([-30 10])
+    legend('Measured', 'Simulated')
 end

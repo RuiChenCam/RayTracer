@@ -178,14 +178,25 @@ classdef Reflector
             theta = 0:90;%XXXXXXXXXXXX theta is the incident angle to the reflector
             theta = pi*theta./180; % theta in readian for ease of use in MATLAB
 
-
+            
             %XXXXXXXXXXXXXXXXXXXXXXXactual calculations, to be verified XXXXXXXXXXXXX
             TEReflFac = ((cos(theta) - sqrt(eta - sin(theta).^2))./(cos(theta) + sqrt(eta - sin(theta).^2)));
             TMReflFac = -1*((eta.*cos(theta) - sqrt(eta - sin(theta).^2))./(eta.*cos(theta) + sqrt(eta - sin(theta).^2)));
 
             TETransFac = ((2.*cos(theta)) ./ (cos(theta) + sqrt(eta - sin(theta).^2)));
             TMTransFac = ((2.*sqrt(eta).*cos(theta)) ./ (eta.*cos(theta) + sqrt(eta - sin(theta).^2)));
-
+            
+            % If assume PEC
+            if isinf(c)
+                TEReflFac(:) = -1;
+                TMReflFac(:) = 1;
+                TETransFac(:)=0;
+                TMTransFac(:)=0;
+                return
+            end
+            
+            
+            
             %% Hot fix of the coefficients considering wall thickness
             %see p16 of reference
             if isinf(obj.thickness)
@@ -213,9 +224,7 @@ classdef Reflector
 %             TETransFac = TETransFac.^2 .* sqrt(eta);
 %             TMTransFac = TMTransFac.^2 .* sqrt(eta);
             
-%             % If assume PEC
-%             TEReflFac(:) = -1;
-%             TMReflFac(:) = 1;
+
             
 %             if ~obj.isgroundceiling %if just a wall
 %                 if obj.polarizationSwap == 1
