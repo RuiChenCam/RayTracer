@@ -8,11 +8,15 @@
 % clear all
 % clc
 
-function [wallxyz1, wallxyz2, wallxyz3, wallxyz4,wallX,wallY,wallZ] = CSV23D_V1 (groundLevel,ceilingLevel)
+function [wallxyz1, wallxyz2, wallxyz3, wallxyz4,wallX,wallY,wallZ] = CSV23D_V1 (groundLevel,ceilingLevel,varargin)
 
-[fileName,fileAddress] = uigetfile('*.csv','Select The Wall Configurations');
+if isempty(varargin)
+    [fileName,fileAddress] = uigetfile('*.csv','Select The Wall Configurations');
 
-[~,~,pointData] = xlsread([fileAddress,fileName]);
+    [~,~,pointData] = xlsread([fileAddress,fileName]);
+else
+    [~,~,pointData] = xlsread(varargin{:});
+end
 %XXX note that in pointData, two points defines a wall(two ends)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

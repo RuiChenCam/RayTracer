@@ -31,6 +31,7 @@ classdef Radio
                         % as [theta phi gain]=[0 0 1;0 0.1 1], then theta
                         % is the value which stays and we set this value to 1. This flag is important
                         % in finding the right index to return gain
+        pattern_file=[];
         
     end
     
@@ -43,7 +44,7 @@ classdef Radio
         
     end
     methods
-        function obj = Radio(frequency,power,phase,location,orientation)
+        function obj = Radio(frequency,power,phase,location,orientation,varargin)
             %Construct an instance of this class
             %   frequency - frequency of this radio, in Hz
             %   power     - power of that radio, in Watt
@@ -58,7 +59,9 @@ classdef Radio
             obj.phase=phase;
             obj.location=location;
             obj.orientation=orientation;
-            
+            if ~isempty(varargin)
+                obj.pattern_file=varargin{:};
+            end
             
 %             obj.pattern_function=varargin{:};  
             
@@ -117,9 +120,13 @@ classdef Radio
 %                 return;
 %             end
             %% Otherwise, if it is defined as a file
-            [fileName,fileAddress] = uigetfile('*.txt', 'Select The Antenna Pattern');
-            data = readtable([fileAddress,fileName]);
-
+            if isempty(obj.pattern_file)
+                [fileName,fileAddress] = uigetfile('*.txt', 'Select The Antenna Pattern');
+                data = readtable([fileAddress,fileName]);
+            else
+                data = readtable(obj.pattern_file);
+                [~,fileName,~] = fileparts(obj.pattern_file);
+            end
             %% some parameters for freespace
 
             eta=377;%Impedance of free space
